@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tbcustomerorder.mapper.TbCustomerOrderMapper">
+
+    <!--获取分页列表-->
+    <select id="findPage" resultType="vip.xiaonuo.main.modular.tbcustomerorder.vo.TbCustomerOrderVO">
+        SELECT
+            a.*,
+            b.type_name as strCategory,
+            c.`owner` as 'tbCustomer.owner', c.owner_tel as 'tbCustomer.ownerTel', c.`status` as 'tbCustomer.status',
+            e.phone as principalPhone
+        FROM tb_customer_order a
+        left join(
+            select  t1.id ,
+                    (select group_concat("",work_order_no,"")  from tb_work_order two  where two.order_id=t1.id)as orderNoList
+            from tb_customer_order t1
+        )d ON a.id=d.id
+        left join tb_product_type b on a.category = b.id
+        left join tb_customer_account c on a.customer_id = c.id
+        left join sys_user e on a.principal = e.id
+        ${ew.customSqlSegment}
+    </select>
+
+    <!--订单滚动展示-->
+    <select id="findRollInfo" resultType="vip.xiaonuo.main.modular.tbcustomerorder.vo.CustomerOrderRollInfoVO">
+        SELECT
+            a.id, a.order_no, a.create_time, a.amount, a.category,
+            b.`owner` as customerName, b.owner_tel as customerPhone
+        FROM tb_customer_order a
+        left join tb_customer_account b on a.customer_id = b.id
+        ${ew.customSqlSegment}
+    </select>
+
+    <!-- 销售合同列表 -->
+    <select id="salesContractPage" resultType="vip.xiaonuo.main.modular.tbcustomerorder.vo.TbCustomerOrderContractVO">
+        SELECT
+            a.id as orderId, a.customer_id, a.order_no, a.principal, a.principal_name, a.`status`, a.create_time,
+            b.`owner` as 'tbCustomer.owner', b.owner_tel as 'tbCustomer.ownerTel', b.`status` as 'tbCustomer.status'
+        FROM tb_customer_order a
+        left JOIN tb_customer_account b on a.customer_id = b.id
+        where a.`status` > 1 and a.`status` != 6
+        ${ew.customSqlSegment}
+    </select>
+
+    <!--  导出  -->
+    <select id="export" resultType="vip.xiaonuo.main.modular.tbcustomerorder.vo.CustomerOrderExportVO" >
+        SELECT
+            a.order_no, c.`owner` as customerName, c.owner_tel as customerTel, a.receive_person,
+            a.customer_sku, a.category, d.type_name as strCategory, a.remark,
+            a.price, a.amount, a.givedate, a.areacode, a.receive_addr, a.receive_phone, a.principal_name,
+            a.create_time, f.value as strStatus, j.value as produceType
+        FROM tb_customer_order a
+        left join(
+            select  t1.id ,
+                    (select group_concat("",work_order_no,"")  from tb_work_order two  where two.order_id=t1.id)as orderNoList
+            from tb_customer_order t1
+        )d1 ON a.id=d1.id
+         left join tb_product_type b on a.category = b.id
+         left join tb_customer_account c on a.customer_id = c.id
+         left join tb_product_type d on a.category = d.id
+         left join sys_user e on a.principal = e.id
+         left join (
+            SELECT dd.`value`, dd.`code`
+            FROM sys_dict_data dd
+            left join sys_dict_type dt on dd.type_id = dt.id
+            where dt.code = 'order_status'
+        ) f on f.code = a.STATUS
+        left join (
+            SELECT dd.`value`, dd.`code`
+            FROM sys_dict_data dd
+            left join sys_dict_type dt on dd.type_id = dt.id
+            where dt.code = 'produce_type'
+        ) j on j.code = a.produce_type
+        ${ew.customSqlSegment}
+    </select>
+
+    <!-- 查询订单，裁切数量 -->
+    <select id="getTailorNum" resultType="vip.xiaonuo.main.modular.tbfactoryorderdetail.vo.WorkOrderDetailVO">
+        SELECT
+            c.color_name, c.size, sum(c.count) as processedNum
+        FROM tb_customer_order a
+        left join tb_work_order b on a.id = b.order_id
+        left join tb_workerorder_reported_detail c on b.id = c.work_order_id
+        ${ew.customSqlSegment}
+        GROUP BY c.color_name, c.size
+        ORDER BY c.color_name, c.size
+    </select>
+
+    <select id="countNumber" resultType="java.lang.Integer">
+        SELECT
+            count(0)
+        FROM tb_customer_order a
+        left join tb_customer_account b on a.customer_id = b.id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="getWorkOrderStatusName" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT
+            d.`value` as statusName
+        FROM tb_customer_order a
+        left join tb_work_order b on a.id = b.order_id
+        left join sys_dict_type c on c.`code` = 'work_order_status'
+        left join sys_dict_data d on c.id = d.type_id and b.`status` = d.`code`
+        WHERE a.id = #{id}
+        ORDER BY b.`status`
+        LIMIT 1
+    </select>
+
+    <select id="countFileNumber" resultType="java.lang.Integer">
+        SELECT
+            count(c.id)
+        FROM tb_customer_order a
+        left join tb_work_order b on a.id = b.order_id
+        left join sys_file_info c on b.id = c.business_data_id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="orderFileUrlList" resultType="java.lang.String">
+        SELECT
+            CONCAT(d.`value`,'/',c.file_path) as filePath
+        FROM tb_customer_order a
+        left join tb_work_order b on a.id = b.order_id
+        left join sys_file_info c on b.id = c.business_data_id
+        left join sys_config d on  d.`code` = 'aliyunupload'
+        ${ew.customSqlSegment}
+    </select>
+
+</mapper>

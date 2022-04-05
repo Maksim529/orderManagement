@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tbworkerorderexception.mapper.TbWorkerOrderExceptionMapper">
+
+    <select id="findPage" resultType="vip.xiaonuo.main.modular.tbworkerorderexception.entity.TbWorkerOrderException">
+        SELECT
+            b.work_order_no as workOrderNo, b.order_counts as 'tbWorkOrder.orderCounts',
+            c.id as 'tbCustomerOrderVO.id', c.order_no as 'tbCustomerOrderVO.orderNo',
+            c.customer_sku as 'tbCustomerOrderVO.customerSku', c.amount as 'tbCustomerOrderVO.amount',
+            c.produce_type  as 'tbCustomerOrderVO.produceType', c.category  as 'tbCustomerOrderVO.category',
+            c.status as 'tbCustomerOrderVO.status',
+            d.`value` as exceptionTypeName, d.`code` as exceptionTypeCode,
+            a.*
+        FROM tb_worker_order_exception a
+         LEFT JOIN tb_work_order b on a.work_order_id = b.id
+         LEFT JOIN tb_customer_order c on b.order_id = c.id
+         LEFT JOIN sys_dict_data d on a.exception_type = d.id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="countNumber" resultType="java.lang.Integer">
+        SELECT
+            count(0)
+        FROM tb_worker_order_exception a
+        LEFT JOIN tb_work_order b on a.work_order_id = b.id
+        ${ew.customSqlSegment}
+    </select>
+
+</mapper>

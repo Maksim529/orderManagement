@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tbworkorderevaluation.mapper.TbWorkOrderEvaluationMapper">
+    <select id="findPage" resultType="vip.xiaonuo.main.modular.tbworkorderevaluation.entity.TbWorkOrderEvaluation">
+        SELECT
+            b.work_order_no, b.order_counts as workOrderCount,
+            c.name as factoryName,
+            a.*
+        FROM tb_work_order_evaluation a
+        LEFT JOIN tb_work_order b ON a.worker_order_id = b.id
+        left join tb_factory c on b.factoryr_id = c.id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

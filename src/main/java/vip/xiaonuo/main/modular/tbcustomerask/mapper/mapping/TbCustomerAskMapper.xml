@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tbcustomerask.mapper.TbCustomerAskMapper">
+
+    <!--询价单滚动展示-->
+    <select id="findRollInfo" resultType="vip.xiaonuo.main.modular.tbcustomerorder.vo.CustomerOrderRollInfoVO">
+        select
+            a.ask_order_no as orderNo, a.create_time, a.counts as amount, a.category,
+            c.`owner` as customerName, c.owner_tel as customerPhone, c.`name` as companyName
+        FROM tb_customer_ask a
+        LEFT JOIN tb_customer_account b on a.account_id = b.id
+        left join tb_customer c on b.customer_id = c.id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="countNumber" resultType="java.lang.Integer">
+        select
+            count(0) as countNumber
+        FROM tb_customer_ask a
+        LEFT JOIN tb_customer_account b on a.account_id = b.id
+        left join tb_customer c on b.customer_id = c.id
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="findPage" resultType="vip.xiaonuo.main.modular.tbcustomerask.entity.TbCustomerAsk">
+        select
+            a.*,
+            b.owner as customerAccountName
+        FROM tb_customer_ask a
+        LEFT JOIN tb_customer_account b on a.account_id = b.id
+        left join tb_customer c on b.customer_id = c.id
+        ${ew.customSqlSegment}
+    </select>
+
+</mapper>

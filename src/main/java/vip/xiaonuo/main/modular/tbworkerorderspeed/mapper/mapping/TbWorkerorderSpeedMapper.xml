@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tbworkerorderspeed.mapper.TbWorkerorderSpeedMapper">
+
+    <select id="findPage" resultType="vip.xiaonuo.main.modular.tbworkerorderspeed.entity.TbWorkerorderSpeed">
+        SELECT
+        CASE
+            WHEN (a.qt_date is not null and a.cut_completion is not null and a.online_time is not null and a.sewing_completion is not null
+                and a.total_inspection is not null and a. packing_delivery is not null) THEN 100
+            WHEN (a.qt_date is not null and a.cut_completion is not null and a.online_time is not null and a.sewing_completion is not null
+                and a.total_inspection is not null ) THEN 80
+            WHEN (a.qt_date is not null and a.cut_completion is not null and a.online_time is not null and a.sewing_completion is not null ) THEN 60
+            WHEN (a.qt_date is not null and a.cut_completion is not null and a.online_time is not null ) THEN 45
+            WHEN (a.qt_date is not null and a.cut_completion is not null) THEN 30
+            WHEN (a.qt_date is not null ) THEN 15
+            ELSE 5
+        END as percentageNum ,
+        CONCAT(d.`value`,'/',c.pic) as orderPic, b.work_order_no,a.*
+        FROM tb_workerorder_speed a
+        left join tb_work_order b on a.work_order_id = b.id
+        left join tb_customer_order c on b.order_id = c.id
+        left join sys_config d on  d.`code` = 'aliyunupload'
+        ${ew.customSqlSegment}
+    </select>
+
+    <select id="getStatusDesc" resultType="java.lang.String">
+        SELECT
+           ${ew.sqlSelect} as dateStr
+        FROM tb_customer_order a
+        left join tb_work_order b on a.id = b.order_id
+        left join tb_workerorder_speed c on b.id = c.work_order_id
+        ${ew.customSqlSegment}
+        limit 1
+    </select>
+
+    <select id="getStatusNum" resultType="java.lang.Integer">
+        SELECT
+            ${ew.sqlSelect} as resultNum
+        from tb_work_order a
+        left join tb_workerorder_speed b on a.id = b.work_order_id
+        ${ew.customSqlSegment}
+    </select>
+
+</mapper>

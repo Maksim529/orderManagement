@@ -1,0 +1,132 @@
+# Mysql数据库
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/snowy-cloud-pub?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+#    url: jdbc:mysql://127.0.0.1:3306/clond-0218?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+# Oracle数据库
+#spring:
+#  datasource:
+#    driver-class-name: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@localhost:1521:xe
+#    username: SNOWY-CLOUD-ORACLE
+#    password: 123456
+
+# SQLServer配置
+#spring:
+#  datasource:
+#    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+#    url: jdbc:sqlserver://localhost:1433;DatabaseName=snowy-cloud-mssql
+#    username: sa
+#    password: 123456
+
+# PostgreSQL配置
+#spring:
+#  datasource:
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://127.0.0.1:5432/snowy-cloud-postgresql
+#    username: postgres
+#    password: 123456
+
+# 达梦数据库
+#spring:
+#  datasource:
+#    driver-class-name: dm.jdbc.driver.DmDriver
+#    url: jdbc:dm://localhost:5236/SYSDBA
+#    username: SYSDBA
+#    password: 123456789
+# #达梦数据库兼容问题，不需要在sql语句前加模式名的解决方法：
+# #https://blog.csdn.net/myth8860/article/details/100557705
+
+# 人大金仓数据库
+#spring:
+#  datasource:
+#    driver-class-name: com.kingbase8.Driver
+#    url: jdbc:kingbase8://localhost:54321/snowy-cloud-kingbase-pub
+#    username: system
+#    password: 123456
+# #人大金仓数据库兼容问题，不需要加在sql语句中加public的解决方法：
+# #在根目录data下的kingbase.conf文档里面找到search_path = '"$user",PUBLIC,sys_catalog'进行替换放开
+# #重启数据库即可完全兼容，注意 sql中不能出现mysql中的关键字的单引号
+
+  # redis相关配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+
+  boot:
+    admin:
+      client:
+        url: http://localhost:9001
+        instance:
+          # 默认使用的是主机名注册，改为使用ip注册
+          prefer-ip: true
+  cloud:
+    # nacos配置
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+#        server-addr: 127.0.0.1:8848
+
+        username: nacos
+        password: nacos
+        group: local
+      config:
+#        server-addr: 127.0.0.1:8848 #Nacos配置中心地址
+        server-addr: 127.0.0.1:8848
+
+        file-extension: yml #指定yml格式的配置
+        username: nacos
+        password: nacos
+        group: local
+# 开放所有endpoint，实际生产根据自身需要开放，出于安全考虑不建议全部开放
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    health:
+      show-details: "ALWAYS"
+#libreoffice文档在线预览配置
+# CentOS 下安装 libreoffice：
+# 安装：yum -y install libreoffice
+# Linux 中文字体乱码解决：
+# 1、上传 C:\Windows\Fonts 下的字体到 /usr/share/fonts/windows 目录
+# 2、执行命令： chmod 644 /usr/share/fonts/windows/* && fc-cache -fv
+jodconverter:
+  local:
+    #暂时关闭预览，启动时会有点慢
+    enabled: false
+    #设置libreoffice主目录 linux地址如：/usr/lib64/libreoffice
+    office-home: C:\Program Files\LibreOffice
+    #开启多个libreoffice进程，每个端口对应一个进程
+    port-numbers: 8100
+    #libreoffice进程重启前的最大进程数
+    max-tasks-per-process: 100
+
+
+
+#文件路径
+file:
+  local-path: /platform/uploadPath
+
+
+
+xxl:
+  job:
+    accessToken: ""
+    admin:
+      addresses: http://127.0.0.1:9004/xxl-job-admin
+    executor:
+      address: ""
+      appname: ${spring.application.name}
+      ip: ""
+      logpath: /data/logs/xxl-job/jobhandler
+      logretentiondays: 30
+      port: 19999
+
+
+

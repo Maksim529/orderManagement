@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tbworkorder.mapper.TbWorkOrderMapper">
+
+    <select id="findVOs" resultType="vip.xiaonuo.main.modular.tbworkorder.vo.TbWorkOrderVO">
+        SELECT a.*, a.order_counts as amount,
+               b.type_name as strCategory,
+               c.`name` as 'tbCustomer.name',
+               c.`owner` as 'tbCustomer.owner',
+               c.owner_tel as 'tbCustomer.ownerTel',
+               c.`status` as 'tbCustomer.status',
+               c.`code` as 'tbCustomer.code'
+        FROM tb_work_order a
+                 left join tb_product_type b on a.category = b.id
+                 left join tb_factory c on a.factoryr_id = c.id
+            ${ew.customSqlSegment}
+    </select>
+
+    <select id="pageByStatus" resultType="vip.xiaonuo.main.modular.dingding.VO.DingOrderVO">
+        SELECT a.* ,c.order_no as orderNo
+        FROM tb_work_order a
+                 left join tb_customer_order c on a.order_id = c.id
+            ${ew.customSqlSegment}
+    </select>
+
+    <!--  查询工单信息  -->
+    <select id="searchOrder" resultType="vip.xiaonuo.main.modular.tbworkorder.vo.TbWorkOrderInfoVO">
+        SELECT
+            a.id as workOrderId, a.work_order_no, a.factoryr_id,a.merchandiser,a.merchandiser_id,
+            b.`name` as factoryName ,
+            c.id as customerOrderId, c.order_no, c.customer_sku, c.amount, c.receive_addr,
+            c.pic
+        FROM tb_work_order a
+        left join tb_factory b on a.factoryr_id = b.id
+        left join tb_customer_order c on a.order_id = c.id
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

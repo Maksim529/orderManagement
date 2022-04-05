@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.sysConfig.mapper.ProductTypeMapper">
+
+    <select id="findList" resultType="vip.xiaonuo.main.modular.sysConfig.entity.ProductType" parameterType="vip.xiaonuo.main.modular.sysConfig.param.ProductTypeParam">
+        SELECT
+        a.*,b.cate_name
+        FROM tb_product_type a
+        left join tb_size_config b on a.category_size = b.id
+    </select>
+
+    <!--获取分页列表-->
+    <select id="page" resultType="vip.xiaonuo.main.modular.sysConfig.entity.ProductType">
+        SELECT
+            a.*,b.cate_name
+        FROM tb_product_type a
+        left join tb_size_config b on a.category_size = b.id
+        ${ew.customSqlSegment}
+    </select>
+
+</mapper>

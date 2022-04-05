@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="vip.xiaonuo.main.modular.tborderspeed.mapper.TbOrderSpeedMapper">
+
+    <select id="findPage" resultType="vip.xiaonuo.main.modular.tborderspeed.entity.TbOrderSpeed">
+        SELECT
+            b.order_no,
+            a.*
+        FROM
+            tb_order_speed a
+                LEFT JOIN tb_customer_order b ON a.order_id = b.id
+            ${ew.customSqlSegment}
+    </select>
+
+</mapper>
